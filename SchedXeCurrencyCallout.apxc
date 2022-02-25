@@ -1,0 +1,8 @@
+global class SchedXeCurrencyCallout implements Schedulable {
+	global void execute(SchedulableContext sc){
+        List<Currency__c> currencies = [SELECT Id,Country_Code__c FROM Currency__c];
+        for(Currency__c cur : currencies){
+            XeCurrencyCallout.getCurrencyExchange(cur.Country_Code__c);
+        }
+    }
+}
