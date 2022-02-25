@@ -1,0 +1,20 @@
+@isTest
+public class TestXeCurrencyClass {   
+     @isTest static void XeCurrencyCalloutTest(){
+         
+        Currency__c EURcur = new Currency__c(name='EUROTEST',Country_Code__c='EUR');
+        insert EURcur;
+       
+        HttpMockFactory mock = new HttpMockFactory(200, 'OK', '{"terms":"http://www.xe.com/legal/dfs.php","privacy":"http://www.xe.com/privacy.php","from":"USD","stats":[{"to":"AUD","high":1.3174513539,"low":1.2537217918,"average":1.2958029334,"standardDeviation":0.0134981433,"volatility":0.5468224132,"highTimestamp":"2021-03-25T00:00:00Z","lowTimestamp":"2021-02-25T00:00:00Z",&quo', new Map<String,String>());
+    	Test.setMock(HttpCalloutMock.class, mock);
+                
+        Test.startTest();
+        XeCurrencyCallout.getCurrencyExchange('EUR');
+        SchedXeCurrencyCallout sh1 = new SchedXeCurrencyCallout();
+		String sch = '0 0 2 * * ?'; 
+		system.schedule('Test Territory Check', sch, sh1); 
+        Test.stopTest();
+        
+    }
+
+}
