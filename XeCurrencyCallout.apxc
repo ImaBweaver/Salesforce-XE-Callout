@@ -1,0 +1,26 @@
+global class XeCurrencyCallout implements Database.AllowsCallouts {
+    @Future(callout=true)
+    public static void getCurrencyExchange(string country_code){
+     string endDate = string.valueOf(system.today());
+     endDate = endDate.substring(0,9);
+     string startDate = string.valueOf(system.today() - 90);
+     startDate = startDate.substring(0,9);
+     HttpRequest req = new HttpRequest();
+     string calloutaddress = 'callout:XeCredentials/v1/stats?from=USD&to='+country_code+'&start_date='+startDate+'&end_date='+endDate;
+     system.debug(calloutaddress);
+     req.setEndpoint(calloutaddress);
+     req.setMethod('GET');
+             
+     Http http = new Http();
+     HTTPResponse response = http.send(req);
+     System.debug(response.getBody());
+	 String JSONResponse = response.getBody();
+	 System.debug(JSONResponse);
+     String ConversionHigh = JSONResponse.substringAfter('"high":');
+	 ConversionHigh = ConversionHigh.substringBefore(',"low":');    
+                  
+     Currency__c cur = [SELECT Id,Country_Code__c,Exchange_Rate__c FROM Currency__c WHERE Country_Code__c=:country_code LIMIT 1];
+     cur.Exchange_Rate__c = decimal.valueOf(ConversionHigh);
+     update cur;
+     }
+}
